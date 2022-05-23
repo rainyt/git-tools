@@ -47,6 +47,17 @@ class Main {
 				commitFile(file);
 			}
 		}
+		if (files.length > 0) {
+			commitToGit();
+		}
+	}
+
+	static function commitToGit():Void {
+		trace('ready upload ${Std.int(size / 1024) + "MB"}');
+		Sys.command('git commit -m "${"分批提交" + files.length + "个文件"}"');
+		Sys.command("git push origin main --force");
+		files = [];
+		size = 0;
 	}
 
 	static function commitFile(path:String):Void {
@@ -65,11 +76,7 @@ class Main {
 			files.push(path);
 			// 当超过某个大小后，一次提交
 			if (size > maxsize) {
-				trace('ready upload ${Std.int(size / 1024) + "MB"}');
-				Sys.command('git commit -m "${"分批提交" + files.length + "个文件"}"');
-				Sys.command("git push origin main --force");
-				files = [];
-				size = 0;
+				commitToGit();
 			}
 		}
 	}
